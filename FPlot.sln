@@ -3,9 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2026
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FPlot", "FPlot\FPlot.fsproj", "{BD91BBED-A251-487B-8E33-1B7912B4271D}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FPlot", "FPlot\FPlot.fsproj", "{BD91BBED-A251-487B-8E33-1B7912B4271D}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FPlot.Test", "FPlot.Test\FPlot.Test.fsproj", "{8E70A3AD-CA54-49A2-B314-B4BFB02EB190}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FPlot.Test", "FPlot.Test\FPlot.Test.fsproj", "{8E70A3AD-CA54-49A2-B314-B4BFB02EB190}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A534C683-6B00-444C-B256-C19C25468958}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

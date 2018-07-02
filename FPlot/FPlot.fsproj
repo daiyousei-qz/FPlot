@@ -8,6 +8,8 @@
     <Compile Include="Core.fs" />
     <Compile Include="Trace.fs" />
     <Compile Include="Layout.fs" />
+    <Compile Include="Html.fs" />
+    <Compile Include="FPlot.fs" />
   </ItemGroup>
 
   <ItemGroup>

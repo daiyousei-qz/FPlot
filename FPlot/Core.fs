@@ -11,6 +11,9 @@ type PropertyGroup private(state: Map<string, obj>) = struct
     member internal m.update key value =
         PropertyGroup(state |> Map.add key value)
 
+    member internal m.tryFind key =
+        state |> Map.tryFind key
+
     end
 
 [<AutoOpen>]
@@ -50,18 +53,29 @@ module internal PropertyGroup =
 
     //
     let toJsonString (data: PropertyGroup) =
-        JsonConvert.SerializeObject(data.State)
+        let z = 
+            data.State 
+            |> Map.filter (fun _ v -> v <> null)
+        z |> JsonConvert.SerializeObject
+
+let internal boxPropertyGroup (data: PropertyGroup) =
+    if data.State <> Map.empty 
+    then box (PropertyGroup.toJsonString data)
+    else box null
 
 // color
 //
 
 [<RequireQualifiedAccess>]
 type Color =
+    | Default
     | Named of string
     | RGB of int*int*int
 
 let internal boxColor color =
     match color with
+    | Color.Default ->
+        null
     | Color.Named(name) ->
         name
     | Color.RGB(r, g, b) -> 

@@ -5,18 +5,21 @@ open FPlot.Core
 
 [<RequireQualifiedAccess>]
 type TraceVisibility =
+    | Default
     | Yes
     | No
     | LegendOnly
 
 let private boxTraceVisibility vis =
     match vis with
+    | TraceVisibility.Default       -> box null
     | TraceVisibility.Yes           -> box true
     | TraceVisibility.No            -> box false
     | TraceVisibility.LegendOnly    -> box "legendonly"
 
 [<RequireQualifiedAccess>]
 type TraceFill =
+    | Default
     | None
     | ToZeroY
     | ToZeroX
@@ -27,6 +30,7 @@ type TraceFill =
 
 let private boxTraceFill fill =
     match fill with
+    | TraceFill.Default -> null
     | TraceFill.None    -> "none"
     | TraceFill.ToZeroY -> "tozeroy"
     | TraceFill.ToZeroX -> "tozerox"
@@ -38,6 +42,7 @@ let private boxTraceFill fill =
 
 [<RequireQualifiedAccess>]
 type TextPosition =
+    | Default
     | TopLeft
     | TopCenter
     | TopRight
@@ -50,6 +55,7 @@ type TextPosition =
 
 let private boxTextPosition pos =
     match pos with
+    | TextPosition.Default      -> null
     | TextPosition.TopLeft      -> "top left"
     | TextPosition.TopCenter    -> "top center"
     | TextPosition.TopRight     -> "top right"
@@ -69,10 +75,11 @@ type Marker =
     | Marker of PropertyGroup
 
 let private boxMarker (Marker(data)) =
-    box (data.State)
+    boxPropertyGroup data
 
 [<RequireQualifiedAccess>]
 type MarkerSymbol =
+    | Default
     | Circle
     | Square
     | Diamond
@@ -100,6 +107,7 @@ type MarkerSymbol =
 
 [<RequireQualifiedAccess>]
 type MarkerStyle =
+    | Default
     | Open
 
 module Marker =
@@ -128,10 +136,11 @@ type Line =
     | Line of PropertyGroup
 
 let private boxLine (Line(data)) =
-    box (data.State)
+    boxPropertyGroup data
 
 [<RequireQualifiedAccess>]
 type LineShape =
+    | Default
     | Linear
     | Spline
     | HV
@@ -141,6 +150,7 @@ type LineShape =
 
 let private boxLineShape shape =
     match shape with
+    | LineShape.Default -> null
     | LineShape.Linear  -> "linear"
     | LineShape.Spline  -> "spline"
     | LineShape.HV      -> "hv"
@@ -151,6 +161,7 @@ let private boxLineShape shape =
 
 [<RequireQualifiedAccess>]
 type LineDash =
+    | Default
     | Solid
     | Dot
     | Dash
@@ -161,6 +172,7 @@ type LineDash =
 
 let private boxLineDash dash =
     match dash with
+    | LineDash.Default          -> null
     | LineDash.Solid            -> "solid"
     | LineDash.Dot              -> "dot"
     | LineDash.Dash             -> "dash"
@@ -191,20 +203,30 @@ module Line =
         line |> applyUpdate (update "dash" (boxLineDash dash))
 
 type ScatterMode =
-    { ShowLine: bool
+    { ForceDefault: bool
+      ShowLine: bool
       ShowMarker: bool
       ShowText: bool }
 
+    static member defaultMode =
+        { ForceDefault = true; ShowLine = false; ShowMarker = false; ShowText = false }
+
     static member none =
-        { ShowLine = false; ShowMarker = false; ShowText = false }
+        { ForceDefault = false; ShowLine = false; ShowMarker = false; ShowText = false }
+
+    static member all =
+        { ForceDefault = false; ShowLine = true; ShowMarker = true; ShowText = true }
 
 let private boxScatterMode mode =
-    seq { if mode.ShowLine   then yield "line"
-          if mode.ShowMarker then yield "marker"
-          if mode.ShowText   then yield "text" }
-    |> fun xs -> String.Join("+", xs)
-    |> function | "" -> "none" | s -> s
-    |> box
+    if mode.ForceDefault then
+        box null
+    else
+        seq { if mode.ShowLine   then yield "line"
+              if mode.ShowMarker then yield "marker"
+              if mode.ShowText   then yield "text" }
+        |> fun xs -> String.Join("+", xs)
+        |> function | "" -> "none" | s -> s
+        |> box
 
 type Scatter =
     | Scatter of PropertyGroup
@@ -217,7 +239,6 @@ type Trace =
     | TraceScatter of Scatter
     | TraceBar of Bar
 
-
 [<AutoOpen>]
 module private TraceImpl =
     let applyVisibility apply vis =
@@ -227,7 +248,7 @@ module private TraceImpl =
         apply (updateBool "showlegend" toggle)
 
     let applyLegendGroup apply groupName =
-        apply (updateBool "legendgroup" groupName)
+        apply (updateStr "legendgroup" groupName)
 
     let applyOpacity apply opacity =
         apply (updateFloat "opacity" opacity)
@@ -296,8 +317,8 @@ module Scatter =
     let withShowLegend toggle scatter =
         applyShowLegend applyUpdate toggle scatter
 
-    let withLegendGroup group scatter =
-        applyShowLegend applyUpdate group scatter
+    let withLegendGroup groupName scatter =
+        applyLegendGroup applyUpdate groupName scatter
 
     let withOpacity opacity scatter =
         applyOpacity applyUpdate opacity scatter
