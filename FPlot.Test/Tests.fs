@@ -6,7 +6,7 @@ open FPlot
 open FPlot.Core
 open FPlot.Layout
 open FPlot.Trace
-open FPlot.Templates
+open FPlot.TraceTemplates
 
 [<Fact>]
 let ``My test`` () =
@@ -21,16 +21,15 @@ let ``My test`` () =
                              |> Line.withColor Color.green)
         |> Scatter.toTrace
 
-    let xs = Seq.init 10 float
     let ys = Seq.init 10 float
     let trace2 =
-        { createScatterTemplate xs ys with
+        { ScatterTemplate.createWithDefaultXs ys with
               Name = "normal"
               Visibility = TraceVisibility.No
               Marker = (Marker.defaultMarker 
                                |> Marker.withSize 10
                                |> Marker.withColor Color.green)}
-        |> translateScatterTemplate
+        |> ScatterTemplate.toTrace
 
     let layout =
         Layout.defaultLayout
